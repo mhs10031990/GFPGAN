@@ -13,6 +13,12 @@
 This repo is for readers from the blogpost linked here:  
 [Coming 12/9/2021]
 
+## Instructions to set up and use on Gradient notebook:
+1. In "Create a Notebook" page, select PyTorch Runtime and any GPU
+2. Toggle advanced options at bottom of page, and set workplace url as https://github.com/gradient-ai/GFPGAN
+3. Launch notebook
+4. Put any photos you want to upscale into "inputs/whole_imgs"
+
 Use this notebook to follow along and reproduce the materials found in the blog
 1. We provide a *clean* version of GFPGAN, which can run without CUDA extensions. So that it can run in **Windows** or on **CPU mode**.
 
