@@ -17,6 +17,8 @@ RUN pip install facexlib
 RUN python setup.py develop
 RUN wget https://github.com/TencentARC/GFPGAN/releases/download/v0.2.0/GFPGANCleanv1-NoCE-C2.pth
 
+EXPOSE 5000
+
 COPY . .
 
 ENTRYPOINT [ "python" ]
