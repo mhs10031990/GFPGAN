@@ -10,13 +10,15 @@ RUN git clone https://github.com/gradient-ai/GFPGAN.git
 WORKDIR /GFPGAN
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
+RUN pip3 install opencv-python-headless
 RUN pip install realesrgan==0.2.2.4
 RUN pip install basicsr
 RUN pip install facexlib
 RUN python setup.py develop
 RUN wget https://github.com/TencentARC/GFPGAN/releases/download/v0.2.0/GFPGANCleanv1-NoCE-C2.pth
-RUN export FLASK_APP=app
-RUN flask run
+
 COPY . .
 
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+ENTRYPOINT [ "python" ]
+
+CMD [ "app.py" ]
