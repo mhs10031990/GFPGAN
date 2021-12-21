@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 
 FROM python:3.8-slim-buster
-
-RUN pip install python-dotenv
+RUN pip install flask
+RUN apt-get install wget
 RUN apt-get update && apt-get install -y git
 RUN git clone https://github.com/gradient-ai/GFPGAN.git
 WORKDIR /GFPGAN
@@ -12,8 +12,9 @@ RUN pip install realesrgan==0.2.2.4
 RUN pip install basicsr
 RUN pip install facexlib
 RUN python setup.py develop
-WORKDIR /app
-
+RUN wget https://github.com/TencentARC/GFPGAN/releases/download/v0.2.0/GFPGANCleanv1-NoCE-C2.pth
+RUN export FLASK_APP=app
+RUN flask run
 COPY . .
 
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
