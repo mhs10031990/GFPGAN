@@ -44,4 +44,4 @@ jobs:
     uses: create-model@v1
     with:
       name: trained-model
-      type: Flask
+      type: Custom
