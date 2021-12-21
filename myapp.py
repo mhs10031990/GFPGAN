@@ -1,5 +1,13 @@
 import io
 import json
+import argparse
+import cv2
+import glob
+import numpy as np
+import os
+from basicsr.utils import imwrite
+
+from gfpgan import GFPGANer
 
 import torch
 import torchvision.transforms as transforms

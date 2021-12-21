@@ -21,10 +21,13 @@ jobs:
       script: |-
         pip install flask
         cd inputs/repo
+        mkdir flaskapp
+        cd flaskapp
         mkdir upload 
         wget https://github.com/TencentARC/GFPGAN/releases/download/v0.2.0/GFPGANCleanv1-NoCE-C2.pth 
-        flask file.py 
-        cp GFPGANCleanv1-NoCE-C2.pth /outputs/trained-model
+        flask myapp.py 
+        cd ..
+        cp -R flaskapp /outputs/trained-model
 
       image: "nvcr.io/nvidia/pytorch:21.10-py3"
 
