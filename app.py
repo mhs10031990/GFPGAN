@@ -12,6 +12,7 @@ from os.path import isfile, join
 
 from gfpgan import GFPGANer
 from werkzeug.utils import secure_filename
+import shutil
 
 import torch
 import torchvision.transforms as transforms
@@ -30,7 +31,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route("/", methods = ['GET', 'POST'])
 def index():
-    return render_template("index.html")
+    return redirect(url_for('upload_file'))
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -38,33 +39,47 @@ def allowed_file(filename):
 
 @app.route("/upload", methods = ['GET', 'POST'])
 def upload_file():
-    mydir = 'inputs/whole_imgs'
-    filelist = [ f for f in os.listdir(mydir)]
-    for f in filelist:
-        os.remove(os.path.join(mydir, f))
+    source = 'inputs/whole_imgs/'
+    destination = 'inputs/saved/'
+    out = 'results/restored_imgs'
+    for f in os.listdir(source):
+        os.remove(os.path.join(source, f))
+    for f in os.listdir(destination):
+        os.remove(os.path.join(destination, f))
+    for f in os.listdir(out):
+        os.remove(os.path.join(out, f))
     if request.method == 'POST':
-            # check if the post request has the file part
-            if 'file' not in request.files:
-                print('No file part')
-                return redirect(request.url)
-            file = request.files['file']
-            # If the user does not select a file, the browser submits an
-            # empty file without a filename.
-            if file.filename == '':
-                print('No selected file')
-                return redirect(request.url)
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                return redirect(url_for('upload_file', name=filename))
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            print('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            print('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('main', name=filename))
     return '''
     <!doctype html>
     <title>Upload new File</title>
     <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
+    <body>
+        <div>
+        After you upload the image, click submit to run the model
+        </div>
+        <br>
+        <div>
+            <form method=post enctype=multipart/form-data>
+            <input type=file name=file>
+            <input type=submit value=Upload>
+            </form>
+        </div>
+    </body>
     '''
 
 @app.route('/main', methods=['POST','GET'])
@@ -174,8 +189,11 @@ def main():
             imwrite(restored_img, save_restore_path)
 
     onlyfiles = [f for f in listdir('results/restored_imgs') if isfile(join('results/restored_imgs', f))]
-    onlyfiles.remove('.DS_Store')
-    return render_template("index2.html", variable = onlyfiles[0])
+    try:
+        onlyfiles.remove('.DS_Store')
+        return render_template("index2.html", variable = onlyfiles[0])
+    except:
+        return render_template("index2.html", variable = onlyfiles[0])
 
 
 
