@@ -2,7 +2,9 @@
 
 FROM python:3.8-slim-buster
 RUN pip install flask
-RUN apt-get install wget
+RUN apt-get update \
+  && apt-get install -y wget \
+  && rm -rf /var/lib/apt/lists/*
 RUN apt-get update && apt-get install -y git
 RUN git clone https://github.com/gradient-ai/GFPGAN.git
 WORKDIR /GFPGAN
