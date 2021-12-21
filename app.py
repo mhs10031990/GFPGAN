@@ -38,6 +38,10 @@ def allowed_file(filename):
 
 @app.route("/upload", methods = ['GET', 'POST'])
 def upload_file():
+    mydir = 'inputs/whole_imgs'
+    filelist = [ f for f in os.listdir(mydir)]
+    for f in filelist:
+        os.remove(os.path.join(mydir, f))
     if request.method == 'POST':
             # check if the post request has the file part
             if 'file' not in request.files:
