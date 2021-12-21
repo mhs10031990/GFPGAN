@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 FROM python:3.8-slim-buster
-
+RUN apt-get update && apt-get install -y git
 RUN git clone https://github.com/gradient-ai/GFPGAN.git
 WORKDIR /GFPGAN
 COPY requirements.txt requirements.txt
