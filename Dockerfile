@@ -1,6 +1,8 @@
 # syntax=docker/dockerfile:1
 
 FROM python:3.8-slim-buster
+
+RUN pip install python-dotenv
 RUN apt-get update && apt-get install -y git
 RUN git clone https://github.com/gradient-ai/GFPGAN.git
 WORKDIR /GFPGAN
@@ -10,6 +12,7 @@ RUN pip install realesrgan==0.2.2.4
 RUN pip install basicsr
 RUN pip install facexlib
 RUN python setup.py develop
+WORKDIR /app
 
 COPY . .
 
