@@ -6,29 +6,72 @@ import glob
 import numpy as np
 import os
 from basicsr.utils import imwrite
+import sys
+from os import listdir
+from os.path import isfile, join
 
 from gfpgan import GFPGANer
+from werkzeug.utils import secure_filename
 
 import torch
 import torchvision.transforms as transforms
 from PIL import Image
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template, redirect, url_for
 
-UPLOAD_FOLDER = 'upload'
+import sys
 
-app = Flask(__name__)
 
-model = torch.load('GFPGANCleanv1-NoCE-C2.pth')
+UPLOAD_FOLDER = 'inputs/whole_imgs'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
-@app.route('/main', methods=['POST'])
-def main(args):
+app = Flask(__name__,static_folder='results')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+@app.route("/", methods = ['GET', 'POST'])
+def index():
+    return render_template("index.html")
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route("/upload", methods = ['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+            # check if the post request has the file part
+            if 'file' not in request.files:
+                print('No file part')
+                return redirect(request.url)
+            file = request.files['file']
+            # If the user does not select a file, the browser submits an
+            # empty file without a filename.
+            if file.filename == '':
+                print('No selected file')
+                return redirect(request.url)
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                return redirect(url_for('upload_file', name=filename))
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
+
+@app.route('/main', methods=['POST','GET'])
+def main():
     """Inference demo for GFPGAN.
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--upscale', type=int, default=2, help='The final upsampling scale of the image')
     parser.add_argument('--arch', type=str, default='clean', help='The GFPGAN architecture. Option: clean | original')
     parser.add_argument('--channel', type=int, default=2, help='Channel multiplier for large networks of StyleGAN2')
-    parser.add_argument('--model_path', type=str, default='experiments/pretrained_models/GFPGANCleanv1-NoCE-C2.pth')
+    parser.add_argument('--model_path', type=str, default='GFPGANCleanv1-NoCE-C2.pth')
     parser.add_argument('--bg_upsampler', type=str, default='realesrgan', help='background upsampler')
     parser.add_argument(
         '--bg_tile', type=int, default=400, help='Tile size for background sampler, 0 for no tile during testing')
@@ -43,7 +86,8 @@ def main(args):
         type=str,
         default='auto',
         help='Image extension. Options: auto | jpg | png, auto means using the same extension as inputs')
-    args = parser.parse_args()
+
+    sys.argv = ['--model_path GFPGANCleanv1-NoCE-C2.pth --upscale 2 --test_path inputs/whole_imgs --save_root results --bg_upsampler realesrgan']
 
     args = parser.parse_args()
     if args.test_path.endswith('/'):
@@ -68,6 +112,7 @@ def main(args):
                 half=True)  # need to set False in CPU mode
     else:
         bg_upsampler = None
+    args.test_path = 'inputs/whole_imgs'
     # set up GFPGAN restorer
     restorer = GFPGANer(
         model_path=args.model_path,
@@ -75,10 +120,15 @@ def main(args):
         arch=args.arch,
         channel_multiplier=args.channel,
         bg_upsampler=bg_upsampler)
-
     img_list = sorted(glob.glob(os.path.join(args.test_path, '*')))
+    print(img_list, '**')
+    count = 4
     for img_path in img_list:
+        count -= 1
+        if count == 0:
+            break
         # read image
+        print('yes')
         img_name = os.path.basename(img_path)
         print(f'Processing {img_name} ...')
         basename, ext = os.path.splitext(img_name)
@@ -90,6 +140,7 @@ def main(args):
 
         # save faces
         for idx, (cropped_face, restored_face) in enumerate(zip(cropped_faces, restored_faces)):
+            print('1')
             # save cropped face
             save_crop_path = os.path.join(args.save_root, 'cropped_faces', f'{basename}_{idx:02d}.png')
             imwrite(cropped_face, save_crop_path)
@@ -118,13 +169,13 @@ def main(args):
                 save_restore_path = os.path.join(args.save_root, 'restored_imgs', f'{basename}.{extension}')
             imwrite(restored_img, save_restore_path)
 
+    onlyfiles = [f for f in listdir('results/restored_imgs') if isfile(join('results/restored_imgs', f))]
+    onlyfiles.remove('.DS_Store')
+    return render_template("index2.html", variable = onlyfiles[0])
 
 
-@app.route('/index')
-def show_index():
-    full_filename = os.path.join(app.config['UPLOAD_FOLDER'], os.path.join(app.config['UPLOAD_FOLDER'], request.files['file1']))
-    return render_template("index.html", user_image = full_filename)
 
 
 if __name__ == '__main__':
     app.run()
+    main()
