@@ -10,25 +10,27 @@
 
 [![Gradient](https://assets.paperspace.io/img/gradient-badge.svg)](https://console.paperspace.com/ml-showcase/notebook/rse025o4eyoduxx?file=Run-GFPGAN.ipynb)
 
-This repo is for readers from the blogpost linked here:  
-[Coming 12/9/2021]
+This repo is for readers from the blogpost linked here: blog.paperspace.com/restoring-old-photos-using-gfp-gan/
 
 ## Instructions to set up and use on Gradient notebook:
+
 1. In "Create a Notebook" page, select PyTorch Runtime and any GPU
 2. Toggle advanced options at bottom of page, and set workplace url as https://github.com/gradient-ai/GFPGAN
 3. Launch notebook
 4. Put any photos you want to upscale into "inputs/whole_imgs"
 
 Use this notebook to follow along and reproduce the materials found in the blog
-1. We provide a *clean* version of GFPGAN, which can run without CUDA extensions. So that it can run in **Windows** or on **CPU mode**.
+
+1. We provide a _clean_ version of GFPGAN, which can run without CUDA extensions. So that it can run in **Windows** or on **CPU mode**.
 
 GFPGAN aims at developing **Practical Algorithm for Real-world Face Restoration**.<br>
-It leverages rich and diverse priors encapsulated in a pretrained face GAN (*e.g.*, StyleGAN2) for blind face restoration.
+It leverages rich and diverse priors encapsulated in a pretrained face GAN (_e.g._, StyleGAN2) for blind face restoration.
 
 :triangular_flag_on_post: **Updates**
+
 - :white_check_mark: Integrated to [Huggingface Spaces](https://huggingface.co/spaces) with [Gradio](https://github.com/gradio-app/gradio). See [Gradio Web Demo](https://huggingface.co/spaces/akhaliq/GFPGAN).
 - :white_check_mark: Support enhancing non-face regions (background) with [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN).
-- :white_check_mark: We provide a *clean* version of GFPGAN, which does not require CUDA extensions.
+- :white*check_mark: We provide a \_clean* version of GFPGAN, which does not require CUDA extensions.
 - :white_check_mark: We provide an updated model without colorizing faces.
 
 ---
@@ -44,8 +46,7 @@ Other recommended projects:<br>
 
 ### :book: GFP-GAN: Towards Real-World Blind Face Restoration with Generative Facial Prior
 
-> [[Paper](https://arxiv.org/abs/2101.04061)] &emsp; [[Project Page](https://xinntao.github.io/projects/gfpgan)] &emsp; [Demo] <br>
-> [Xintao Wang](https://xinntao.github.io/), [Yu Li](https://yu-li.github.io/), [Honglun Zhang](https://scholar.google.com/citations?hl=en&user=KjQLROoAAAAJ), [Ying Shan](https://scholar.google.com/citations?user=4oXBp9UAAAAJ&hl=en) <br>
+> [[Paper](https://arxiv.org/abs/2101.04061)] &emsp; [[Project Page](https://xinntao.github.io/projects/gfpgan)] &emsp; [Demo] <br> > [Xintao Wang](https://xinntao.github.io/), [Yu Li](https://yu-li.github.io/), [Honglun Zhang](https://scholar.google.com/citations?hl=en&user=KjQLROoAAAAJ), [Ying Shan](https://scholar.google.com/citations?user=4oXBp9UAAAAJ&hl=en) <br>
 > Applied Research Center (ARC), Tencent PCG
 
 <p align="center">
@@ -63,34 +64,34 @@ Other recommended projects:<br>
 
 ### Installation
 
-We now provide a *clean* version of GFPGAN, which does not require customized CUDA extensions. <br>
+We now provide a _clean_ version of GFPGAN, which does not require customized CUDA extensions. <br>
 If you want want to use the original model in our paper, please see [PaperModel.md](PaperModel.md) for installation.
 
 1. Clone repo
 
-    ```bash
-    git clone https://github.com/TencentARC/GFPGAN.git
-    cd GFPGAN
-    ```
+   ```bash
+   git clone https://github.com/TencentARC/GFPGAN.git
+   cd GFPGAN
+   ```
 
 1. Install dependent packages
 
-    ```bash
-    # Install basicsr - https://github.com/xinntao/BasicSR
-    # We use BasicSR for both training and inference
-    pip install basicsr
+   ```bash
+   # Install basicsr - https://github.com/xinntao/BasicSR
+   # We use BasicSR for both training and inference
+   pip install basicsr
 
-    # Install facexlib - https://github.com/xinntao/facexlib
-    # We use face detection and face restoration helper in the facexlib package
-    pip install facexlib
+   # Install facexlib - https://github.com/xinntao/facexlib
+   # We use face detection and face restoration helper in the facexlib package
+   pip install facexlib
 
-    pip install -r requirements.txt
-    python setup.py develop
+   pip install -r requirements.txt
+   python setup.py develop
 
-    # If you want to enhance the background (non-face) regions with Real-ESRGAN,
-    # you also need to install the realesrgan package
-    pip install realesrgan
-    ```
+   # If you want to enhance the background (non-face) regions with Real-ESRGAN,
+   # you also need to install the realesrgan package
+   pip install realesrgan
+   ```
 
 ## :zap: Quick Inference
 
@@ -132,9 +133,10 @@ You could improve it according to your own needs.
 1. Dataset preparation: [FFHQ](https://github.com/NVlabs/ffhq-dataset)
 
 1. Download pre-trained models and other data. Put them in the `experiments/pretrained_models` folder.
-    1. [Pretrained StyleGAN2 model: StyleGAN2_512_Cmul1_FFHQ_B12G4_scratch_800k.pth](https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/StyleGAN2_512_Cmul1_FFHQ_B12G4_scratch_800k.pth)
-    1. [Component locations of FFHQ: FFHQ_eye_mouth_landmarks_512.pth](https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/FFHQ_eye_mouth_landmarks_512.pth)
-    1. [A simple ArcFace model: arcface_resnet18.pth](https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/arcface_resnet18.pth)
+
+   1. [Pretrained StyleGAN2 model: StyleGAN2_512_Cmul1_FFHQ_B12G4_scratch_800k.pth](https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/StyleGAN2_512_Cmul1_FFHQ_B12G4_scratch_800k.pth)
+   1. [Component locations of FFHQ: FFHQ_eye_mouth_landmarks_512.pth](https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/FFHQ_eye_mouth_landmarks_512.pth)
+   1. [A simple ArcFace model: arcface_resnet18.pth](https://github.com/TencentARC/GFPGAN/releases/download/v0.1.0/arcface_resnet18.pth)
 
 1. Modify the configuration file `options/train_gfpgan_v1.yml` accordingly.
 
